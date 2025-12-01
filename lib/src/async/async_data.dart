@@ -143,13 +143,13 @@ extension AsyncDataTypedExt<T extends Object> on AsyncData<T> {
 
   AsyncData<T> _toValue(T value) =>
       (this is AsyncDataValue<T> && (this as AsyncDataValue<T>).value == value)
-      ? this
-      : AsyncData<T>.value(value);
+          ? this
+          : AsyncData<T>.value(value);
 
   AsyncData<T> _toError(Object error, [StackTrace? stackTrace]) =>
       (this is AsyncDataError<T> &&
-          (this as AsyncDataError<T>).error == error &&
-          (this as AsyncDataError<T>).stackTrace == stackTrace)
-      ? this
-      : AsyncData<T>.error(error, stackTrace);
+              (this as AsyncDataError<T>).error == error &&
+              (this as AsyncDataError<T>).stackTrace == stackTrace)
+          ? this
+          : AsyncData<T>.error(error, stackTrace);
 }

@@ -26,7 +26,8 @@ extension AsyncDataNotifierTypedExt<T extends Object>
     required R Function(T? data) loading,
     required R Function(T data) value,
     required R Function(Object error, StackTrace? stackTrace) error,
-  }) => this.value.when<R>(loading: loading, value: value, error: error);
+  }) =>
+      this.value.when<R>(loading: loading, value: value, error: error);
 
   void toLoading([T? data]) => value = value._toLoading(data);
 
