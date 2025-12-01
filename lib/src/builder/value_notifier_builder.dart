@@ -1,31 +1,31 @@
-import 'package:async_data/src/async/async_data.dart';
+import 'package:an_async_data/src/async/async_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' as widgets;
 import 'package:flutter/widgets.dart' hide Builder;
 
-typedef ErrorBuilder =
-    Widget Function(BuildContext context, Object error, StackTrace? stackTrace);
+typedef ErrorBuilder = Widget Function(
+    BuildContext context, Object error, StackTrace? stackTrace);
 typedef WidgetBuilder = Widget Function(BuildContext context);
-typedef ErrorBuilderToSliver =
-    Widget Function(
-      BuildContext context,
-      Widget errorWidget,
-      Object error,
-      StackTrace? stackTrace,
-    );
-typedef LoadingBuilderToSliver =
-    Widget Function(BuildContext context, Widget loadingWidget);
+typedef ErrorBuilderToSliver = Widget Function(
+  BuildContext context,
+  Widget errorWidget,
+  Object error,
+  StackTrace? stackTrace,
+);
+typedef LoadingBuilderToSliver = Widget Function(
+    BuildContext context, Widget loadingWidget);
 typedef ValueBuilder<T> = Widget Function(BuildContext context, T value);
-typedef ValueAndChildBuilder<T> =
-    Widget Function(BuildContext context, T value, Widget child);
-typedef ValueListItemBuilder<T> =
-    Widget Function(BuildContext context, T value, int index);
+typedef ValueAndChildBuilder<T> = Widget Function(
+    BuildContext context, T value, Widget child);
+typedef ValueListItemBuilder<T> = Widget Function(
+    BuildContext context, T value, int index);
 
 Widget _errorBuilder(
   BuildContext context,
   Object error,
   StackTrace? stackTrace,
-) => const SizedBox.shrink();
+) =>
+    const SizedBox.shrink();
 
 Widget _loadingBuilder(BuildContext context) => const SizedBox.shrink();
 
@@ -34,7 +34,8 @@ Widget _errorBuilderToSliver(
   Widget errorWidget,
   Object error,
   StackTrace? stackTrace,
-) => SliverToBoxAdapter(child: errorWidget);
+) =>
+    SliverToBoxAdapter(child: errorWidget);
 
 Widget _loadingSliverBuilder(BuildContext context, Widget loadingWidget) =>
     SliverFillRemaining(child: loadingWidget);

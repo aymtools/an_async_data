@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:async_data/async_data.dart';
+import 'package:an_async_data/an_async_data.dart';
 
 void main() {
   // test('adds one to input values', () {
