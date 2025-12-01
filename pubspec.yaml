@@ -1,0 +1,21 @@
+name: an_async_data
+description: "Provides a convenient single-state management solution for loading, data, and error, along with
+corresponding state-conversion mechanisms."
+version: 1.0.0
+homepage:
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.10.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  test: ^1.5.1
+  flutter_lints: any
+
+flutter:
