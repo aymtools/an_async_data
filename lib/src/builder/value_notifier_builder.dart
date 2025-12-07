@@ -40,8 +40,7 @@ Widget _errorBuilderToSliver(
 Widget _loadingSliverBuilder(BuildContext context, Widget loadingWidget) =>
     SliverFillRemaining(child: loadingWidget);
 
-extension ValueNotifierAsyncBuilderExt<T extends Object>
-    on ValueListenable<AsyncData<T>> {
+extension ValueNotifierAsyncBuilderExt<T> on ValueListenable<AsyncData<T>> {
   /// 快速构建一个ValueListenableBuilder
   /// * 内部类型为 AsyncData&lt;T> <br>
   /// * [sliver] 是否对配置信息启用sliver 转换 <br>
@@ -61,7 +60,7 @@ extension ValueNotifierAsyncBuilderExt<T extends Object>
       valueListenable: this,
       builder: (context, value, _) {
         return value.when(
-          loading: (_) {
+          loading: () {
             loadingBuilder ??= context.config.loadingBuilder;
             if (sliver) {
               loadingBuilderToSliver ??= context.config.loadingBuilderToSliver;

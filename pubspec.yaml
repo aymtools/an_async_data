@@ -1,7 +1,7 @@
 name: an_async_data
 description: "Provides a convenient single-state management solution for loading, data, and error, along with
 corresponding state-conversion mechanisms."
-version: 1.0.1
+version: 1.1.0
 homepage: https://github.com/aymtools/an_async_data/
 issue_tracker: https://github.com/aymtools/an_async_data/issues
 

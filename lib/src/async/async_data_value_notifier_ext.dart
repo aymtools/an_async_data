@@ -1,7 +1,6 @@
 part of 'async_data.dart';
 
-extension AsyncDataNotifierTypedExt<T extends Object>
-    on ValueNotifier<AsyncData<T>> {
+extension AsyncDataNotifierTypedExt<T> on ValueNotifier<AsyncData<T>> {
   bool get isLoading => value.isLoading;
 
   bool get hasError => value.hasError;
@@ -23,13 +22,13 @@ extension AsyncDataNotifierTypedExt<T extends Object>
   StackTrace? get stackTrace => value.stackTrace;
 
   R when<R>({
-    required R Function(T? data) loading,
+    required R Function() loading,
     required R Function(T data) value,
     required R Function(Object error, StackTrace? stackTrace) error,
   }) =>
       this.value.when<R>(loading: loading, value: value, error: error);
 
-  void toLoading([T? data]) => value = value._toLoading(data);
+  void toLoading() => value = value._toLoading();
 
   void toValue(T data) => value = value._toValue(data);
 

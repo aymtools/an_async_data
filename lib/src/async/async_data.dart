@@ -3,10 +3,10 @@ import 'package:flutter/widgets.dart';
 part 'async_data_value_notifier_ext.dart';
 
 /// 定义一个基于异步状态的数据结构
-sealed class AsyncData<T extends Object> {
+sealed class AsyncData<T> {
   AsyncData._();
 
-  factory AsyncData.loading([T? value]) => AsyncDataLoading<T>._(value);
+  factory AsyncData.loading() => AsyncDataLoading<T>._();
 
   factory AsyncData.value(T value) => AsyncDataValue<T>._(value);
 
@@ -15,24 +15,19 @@ sealed class AsyncData<T extends Object> {
 }
 
 /// 加载中
-class AsyncDataLoading<T extends Object> extends AsyncData<T> {
-  final T? value;
-
-  AsyncDataLoading._(this.value) : super._();
+class AsyncDataLoading<T> extends AsyncData<T> {
+  AsyncDataLoading._() : super._();
 
   @override
-  int get hashCode => Object.hash(AsyncDataLoading, T, value);
+  int get hashCode => Object.hash(AsyncDataLoading, T);
 
   @override
   bool operator ==(Object other) =>
-      identical(other, this) ||
-      (other.runtimeType == runtimeType &&
-          other is AsyncDataLoading<T> &&
-          other.value == value);
+      identical(other, this) || (other.runtimeType == runtimeType);
 }
 
 ///  加载完成 包含数据
-class AsyncDataValue<T extends Object> extends AsyncData<T> {
+class AsyncDataValue<T> extends AsyncData<T> {
   final T value;
 
   T get date => value;
@@ -40,7 +35,7 @@ class AsyncDataValue<T extends Object> extends AsyncData<T> {
   AsyncDataValue._(this.value) : super._();
 
   @override
-  int get hashCode => Object.hash(AsyncDataValue, value);
+  int get hashCode => Object.hash(AsyncDataValue, T, value);
 
   @override
   bool operator ==(Object other) =>
@@ -51,14 +46,14 @@ class AsyncDataValue<T extends Object> extends AsyncData<T> {
 }
 
 /// 加载失败 存在异常
-class AsyncDataError<T extends Object> extends AsyncData<T> {
+class AsyncDataError<T> extends AsyncData<T> {
   final Object error;
   final StackTrace? stackTrace;
 
   AsyncDataError._(this.error, [this.stackTrace]) : super._();
 
   @override
-  int get hashCode => Object.hash(AsyncDataError, error, stackTrace);
+  int get hashCode => Object.hash(AsyncDataError, T, error, stackTrace);
 
   @override
   bool operator ==(Object other) =>
@@ -69,18 +64,14 @@ class AsyncDataError<T extends Object> extends AsyncData<T> {
           other.stackTrace == stackTrace);
 }
 
-extension AsyncDataTypedExt<T extends Object> on AsyncData<T> {
+extension AsyncDataTypedExt<T> on AsyncData<T> {
   bool get isLoading => this is AsyncDataLoading<T>;
 
   bool get hasError => this is AsyncDataError<T>;
 
   bool get isError => this is AsyncDataError<T>;
 
-  bool get hasValue {
-    final that = this;
-    return that is AsyncDataValue<T> ||
-        (that is AsyncDataLoading<T> && that.value != null);
-  }
+  bool get hasValue => isValue;
 
   bool get isValue => this is AsyncDataValue<T>;
 
@@ -90,10 +81,8 @@ extension AsyncDataTypedExt<T extends Object> on AsyncData<T> {
     final that = this;
     if (that is AsyncDataValue<T>) {
       return that.value;
-    } else if (that is AsyncDataLoading<T> && that.value != null) {
-      return that.value!;
     } else {
-      throw StateError('AsyncData has no value');
+      throw StateError('AsyncData not has value');
     }
   }
 
@@ -103,8 +92,6 @@ extension AsyncDataTypedExt<T extends Object> on AsyncData<T> {
     final that = this;
     if (that is AsyncDataValue<T>) {
       return that.value;
-    } else if (that is AsyncDataLoading<T> && that.value != null) {
-      return that.value;
     } else {
       return null;
     }
@@ -112,7 +99,14 @@ extension AsyncDataTypedExt<T extends Object> on AsyncData<T> {
 
   T? get dataOrNull => valueOrNull;
 
-  Object get error => (this as AsyncDataError<T>).error;
+  Object get error {
+    final that = this;
+    if (that is AsyncDataError<T>) {
+      return that.error;
+    } else {
+      throw StateError('AsyncData $this is not error');
+    }
+  }
 
   StackTrace? get stackTrace {
     final that = this;
@@ -124,12 +118,12 @@ extension AsyncDataTypedExt<T extends Object> on AsyncData<T> {
   }
 
   R when<R>({
-    required R Function(T? value) loading,
+    required R Function() loading,
     required R Function(T value) value,
     required R Function(Object error, StackTrace? stackTrace) error,
   }) {
     if (isLoading) {
-      return loading(valueOrNull);
+      return loading();
     } else if (isValue) {
       return value(this.value);
     } else {
@@ -137,9 +131,8 @@ extension AsyncDataTypedExt<T extends Object> on AsyncData<T> {
     }
   }
 
-  AsyncData<T> _toLoading(T? value) => isLoading && valueOrNull == value
-      ? this as AsyncDataLoading<T>
-      : AsyncData<T>.loading(value);
+  AsyncData<T> _toLoading() =>
+      isLoading ? this as AsyncDataLoading<T> : AsyncData<T>.loading();
 
   AsyncData<T> _toValue(T value) =>
       (this is AsyncDataValue<T> && (this as AsyncDataValue<T>).value == value)
