@@ -34,4 +34,14 @@ extension AsyncDataNotifierTypedExt<T> on ValueNotifier<AsyncData<T>> {
 
   void toError(Object error, [StackTrace? stackTrace]) =>
       value = value._toError(error, stackTrace);
+
+  void toValueLoading() => value = value._toValueLoading();
+
+  void toValueLoadingRaw(T data) => value = value._toValueLoadingRaw(data);
+
+  void toValueError(Object error, [StackTrace? stackTrace]) =>
+      value = value._toValueError(error, stackTrace);
+
+  void toValueErrorRaw(T data, Object error, [StackTrace? stackTrace]) =>
+      value = value._toValueErrorRaw(data, error, stackTrace);
 }

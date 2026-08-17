@@ -1,3 +1,7 @@
+## 1.2.0
+
+* `AsyncDataLoading<T>` and  `syncDataError<T>` Attached value.
+
 ## 1.1.0
 
 * `AsyncData<T>` now supports nullable T.
