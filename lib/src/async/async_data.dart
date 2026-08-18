@@ -24,6 +24,7 @@ sealed class AsyncData<T> {
 
 /// 加载中
 class AsyncDataLoading<T> extends AsyncData<T> {
+  @override
   final bool hasValue;
   final T? value;
 
@@ -41,15 +42,20 @@ class AsyncDataLoading<T> extends AsyncData<T> {
 
   @override
   bool operator ==(Object other) =>
-      identical(other, this) || (other.runtimeType == runtimeType);
+      identical(other, this) ||
+      (other.runtimeType == runtimeType &&
+          other is AsyncDataLoading<T> &&
+          other.hasValue == hasValue &&
+          other.value == value);
 }
 
 ///  加载完成 包含数据
 class AsyncDataValue<T> extends AsyncData<T> {
   final T value;
 
-  T get date => value;
+  T get data => value;
 
+  @override
   bool get hasValue => true;
 
   AsyncDataValue._(this.value) : super._();
@@ -69,6 +75,7 @@ class AsyncDataValue<T> extends AsyncData<T> {
 class AsyncDataError<T> extends AsyncData<T> {
   final Object error;
   final StackTrace? stackTrace;
+  @override
   final bool hasValue;
   final T? value;
 

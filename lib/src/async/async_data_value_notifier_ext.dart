@@ -11,6 +11,8 @@ extension AsyncDataNotifierTypedExt<T> on ValueNotifier<AsyncData<T>> {
 
   bool get hasData => value.hasData;
 
+  bool get hasValue => value.hasValue;
+
   T get data => value.data;
 
   T? get dataOrNull => valueOrNull;

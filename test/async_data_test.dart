@@ -138,5 +138,107 @@ void main() {
         expect(curr, isTrue);
       });
     });
+
+    group('valueLoading', () {
+      test('equals', () {
+        final data = TestEqualsObject('1');
+        final value = AsyncData<TestObject>.valueLoading(data);
+        final value2 = AsyncData<TestObject>.valueLoading(data);
+        expect(value, equals(value2));
+      });
+
+      test('not equals loading', () {
+        final loading = AsyncData<TestObject>.loading();
+        final valueLoading = AsyncData<TestObject>.valueLoading(TestObject());
+        expect(loading, isNot(equals(valueLoading)));
+      });
+
+      test('properties', () {
+        final data = TestObject();
+        final value = AsyncData<TestObject>.valueLoading(data);
+        expect(value.isLoading, isTrue);
+        expect(value.hasValue, isTrue);
+        expect(value.value, equals(data));
+        expect(value.valueOrNull, equals(data));
+      });
+    });
+
+    group('valueError', () {
+      test('equals', () {
+        final data = TestEqualsObject('1');
+        final error = 'error';
+        final value = AsyncData<TestObject>.valueError(data, error);
+        final value2 = AsyncData<TestObject>.valueError(data, error);
+        expect(value, equals(value2));
+      });
+
+      test('not equals error', () {
+        final error = AsyncData<TestObject>.error('error');
+        final valueError =
+            AsyncData<TestObject>.valueError(TestObject(), 'error');
+        expect(error, isNot(equals(valueError)));
+      });
+
+      test('properties', () {
+        final data = TestObject();
+        final error = 'error';
+        final value = AsyncData<TestObject>.valueError(data, error);
+        expect(value.isError, isTrue);
+        expect(value.hasValue, isTrue);
+        expect(value.value, equals(data));
+        expect(value.error, equals(error));
+      });
+    });
+
+    group('getters', () {
+      test('value throws StateError', () {
+        final loading = AsyncData<TestObject>.loading();
+        expect(() => loading.value, throwsStateError);
+        final error = AsyncData<TestObject>.error('error');
+        expect(() => error.value, throwsStateError);
+      });
+
+      test('data throws StateError', () {
+        final loading = AsyncData<TestObject>.loading();
+        expect(() => loading.data, throwsStateError);
+        final valueLoading = AsyncData<TestObject>.valueLoading(TestObject());
+        expect(() => valueLoading.data, throwsStateError);
+        final error = AsyncData<TestObject>.error('error');
+        expect(() => error.data, throwsStateError);
+      });
+
+      test('error throws StateError', () {
+        final loading = AsyncData<TestObject>.loading();
+        expect(() => loading.error, throwsStateError);
+        final value = AsyncData<TestObject>.value(TestObject());
+        expect(() => value.error, throwsStateError);
+      });
+
+      test('hasData', () {
+        expect(AsyncData<int>.loading().hasData, isFalse);
+        expect(AsyncData<int>.value(1).hasData, isTrue);
+        expect(AsyncData<int>.error('err').hasData, isFalse);
+        expect(AsyncData<int>.valueLoading(1).hasData, isTrue);
+        expect(AsyncData<int>.valueError(1, 'err').hasData, isTrue);
+      });
+
+      test('dataOrNull', () {
+        expect(AsyncData<int>.loading().dataOrNull, isNull);
+        expect(AsyncData<int>.value(1).dataOrNull, equals(1));
+        expect(AsyncData<int>.error('err').dataOrNull, isNull);
+        expect(AsyncData<int>.valueLoading(1).dataOrNull, isNull);
+        expect(AsyncData<int>.valueError(1, 'err').dataOrNull, isNull);
+      });
+
+      test('stackTrace', () {
+        final st = StackTrace.current;
+        expect(AsyncData<int>.loading().stackTrace, isNull);
+        expect(AsyncData<int>.value(1).stackTrace, isNull);
+        expect(AsyncData<int>.error('err', st).stackTrace, equals(st));
+        expect(AsyncData<int>.valueError(1, 'err', st).stackTrace, equals(st));
+      });
+    });
   });
+
 }
+

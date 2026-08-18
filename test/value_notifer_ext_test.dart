@@ -139,6 +139,44 @@ void main() {
       expect(notifier.stackTrace, isNull);
     });
 
+    test('valueLoading transitions', () {
+      final value = TestObject();
+      final notifier =
+          ValueNotifier<AsyncData<TestObject>>(AsyncData.value(value));
+
+      notifier.toValueLoading();
+      expect(notifier.isLoading, isTrue);
+      expect(notifier.hasValue, isTrue);
+      expect(notifier.value.value, equals(value));
+
+      final value2 = TestObject();
+      notifier.toValueLoadingRaw(value2);
+      expect(notifier.isLoading, isTrue);
+      expect(notifier.hasValue, isTrue);
+      expect(notifier.value.value, equals(value2));
+    });
+
+    test('valueError transitions', () {
+      final value = TestObject();
+      final notifier =
+          ValueNotifier<AsyncData<TestObject>>(AsyncData.value(value));
+      final error = 'error';
+
+      notifier.toValueError(error);
+      expect(notifier.isError, isTrue);
+      expect(notifier.hasValue, isTrue);
+      expect(notifier.value.value, equals(value));
+      expect(notifier.error, equals(error));
+
+      final value2 = TestObject();
+      final error2 = 'error2';
+      notifier.toValueErrorRaw(value2, error2);
+      expect(notifier.isError, isTrue);
+      expect(notifier.hasValue, isTrue);
+      expect(notifier.value.value, equals(value2));
+      expect(notifier.error, equals(error2));
+    });
+
     test('when', () {
       final loading = AsyncData<TestObject>.loading();
       final value = TestObject();
@@ -178,6 +216,46 @@ void main() {
       expect(data, isNull);
       expect(err, equals(error));
       reset();
+    });
+  });
+
+  group('AsyncDataNotifierTypedExt', () {
+    test('toLoading', () {
+      final notifier = ValueNotifier<AsyncData<int>>(AsyncData.value(1));
+      notifier.toLoading();
+      expect(notifier.value.isLoading, isTrue);
+      expect(notifier.value.hasValue, isFalse);
+    });
+
+    test('toValue', () {
+      final notifier = ValueNotifier<AsyncData<int>>(AsyncData.loading());
+      notifier.toValue(1);
+      expect(notifier.value.isValue, isTrue);
+      expect(notifier.value.value, equals(1));
+    });
+
+    test('toError', () {
+      final notifier = ValueNotifier<AsyncData<int>>(AsyncData.loading());
+      notifier.toError('error');
+      expect(notifier.value.isError, isTrue);
+      expect(notifier.value.error, equals('error'));
+    });
+
+    test('toValueLoading', () {
+      final notifier = ValueNotifier<AsyncData<int>>(AsyncData.value(1));
+      notifier.toValueLoading();
+      expect(notifier.value.isLoading, isTrue);
+      expect(notifier.value.hasValue, isTrue);
+      expect(notifier.value.value, equals(1));
+    });
+
+    test('toValueError', () {
+      final notifier = ValueNotifier<AsyncData<int>>(AsyncData.value(1));
+      notifier.toValueError('error');
+      expect(notifier.value.isError, isTrue);
+      expect(notifier.value.hasValue, isTrue);
+      expect(notifier.value.value, equals(1));
+      expect(notifier.value.error, equals('error'));
     });
   });
 }
