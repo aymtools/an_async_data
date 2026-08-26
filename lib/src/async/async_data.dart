@@ -4,71 +4,74 @@ part 'async_data_value_notifier_ext.dart';
 
 /// 定义一个基于异步状态的数据结构
 sealed class AsyncData<T> {
-  bool get hasValue;
+  bool get hasData;
 
   AsyncData._();
 
   factory AsyncData.loading() => AsyncDataLoading<T>._();
 
-  factory AsyncData.value(T value) => AsyncDataValue<T>._(value);
+  factory AsyncData.value(T data) => AsyncDataValue<T>._(data);
+
+  factory AsyncData.data(T data) => AsyncDataValue<T>._(data);
+
+  factory AsyncData(T data) => AsyncDataValue<T>._(data);
 
   factory AsyncData.error(Object error, [StackTrace? stackTrace]) =>
       AsyncDataError<T>._(error, stackTrace);
 
-  factory AsyncData.valueLoading(T value) => AsyncDataLoading<T>._value(value);
+  factory AsyncData.dataLoading(T data) => AsyncDataLoading<T>._data(data);
 
-  factory AsyncData.valueError(T value, Object error,
-          [StackTrace? stackTrace]) =>
-      AsyncDataError<T>._value(value, error, stackTrace);
+  factory AsyncData.dataError(T data, Object error, [StackTrace? stackTrace]) =>
+      AsyncDataError<T>._data(data, error, stackTrace);
 }
 
 /// 加载中
 class AsyncDataLoading<T> extends AsyncData<T> {
   @override
-  final bool hasValue;
-  final T? value;
+  final bool hasData;
+  final T? data;
 
   AsyncDataLoading._()
-      : hasValue = false,
-        value = null,
+      : hasData = false,
+        data = null,
         super._();
 
-  AsyncDataLoading._value(T this.value)
-      : hasValue = true,
+  AsyncDataLoading._data(T this.data)
+      : hasData = true,
         super._();
 
   @override
-  int get hashCode => Object.hash(AsyncDataLoading, T, hasValue, value);
+  int get hashCode => Object.hash(AsyncDataLoading, T, hasData, data);
 
   @override
   bool operator ==(Object other) =>
       identical(other, this) ||
       (other.runtimeType == runtimeType &&
           other is AsyncDataLoading<T> &&
-          other.hasValue == hasValue &&
-          other.value == value);
+          other.hasData == hasData &&
+          other.data == data);
 }
 
 ///  加载完成 包含数据
 class AsyncDataValue<T> extends AsyncData<T> {
-  final T value;
+  final T data;
 
-  T get data => value;
-
-  @override
-  bool get hasValue => true;
-
-  AsyncDataValue._(this.value) : super._();
+  T get value => data;
 
   @override
-  int get hashCode => Object.hash(AsyncDataValue, T, value);
+  bool get hasData => true;
+
+  AsyncDataValue._(this.data) : super._();
+
+  @override
+  int get hashCode => Object.hash(AsyncDataValue, T, data);
 
   @override
   bool operator ==(Object other) =>
       identical(other, this) ||
       (other.runtimeType == runtimeType &&
           other is AsyncDataValue<T> &&
-          other.value == value);
+          other.data == data);
 }
 
 /// 加载失败 存在异常
@@ -76,29 +79,29 @@ class AsyncDataError<T> extends AsyncData<T> {
   final Object error;
   final StackTrace? stackTrace;
   @override
-  final bool hasValue;
-  final T? value;
+  final bool hasData;
+  final T? data;
 
   AsyncDataError._(this.error, [this.stackTrace])
-      : hasValue = false,
-        value = null,
+      : hasData = false,
+        data = null,
         super._();
 
-  AsyncDataError._value(T this.value, this.error, [this.stackTrace])
-      : hasValue = true,
+  AsyncDataError._data(T this.data, this.error, [this.stackTrace])
+      : hasData = true,
         super._();
 
   @override
   int get hashCode =>
-      Object.hash(AsyncDataError, T, hasValue, value, error, stackTrace);
+      Object.hash(AsyncDataError, T, hasData, data, error, stackTrace);
 
   @override
   bool operator ==(Object other) =>
       identical(other, this) ||
       (other.runtimeType == runtimeType &&
           other is AsyncDataError<T> &&
-          other.hasValue == hasValue &&
-          other.value == value &&
+          other.hasData == hasData &&
+          other.data == data &&
           other.error == error &&
           other.stackTrace == stackTrace);
 }
@@ -112,16 +115,18 @@ extension AsyncDataTypedExt<T> on AsyncData<T> {
 
   bool get isValue => this is AsyncDataValue<T>;
 
-  bool get hasData => hasValue;
+  bool get isData => this is AsyncDataValue<T>;
+
+  bool get hasValue => hasData;
 
   T get value {
     final that = this;
     if (that is AsyncDataValue<T>) {
-      return that.value;
-    } else if (that is AsyncDataLoading<T> && that.hasValue) {
-      return that.value as T;
-    } else if (that is AsyncDataError<T> && that.hasValue) {
-      return that.value as T;
+      return that.data;
+    } else if (that is AsyncDataLoading<T> && that.hasData) {
+      return that.data as T;
+    } else if (that is AsyncDataError<T> && that.hasData) {
+      return that.data as T;
     } else {
       throw StateError('AsyncData not has value');
     }
@@ -139,11 +144,11 @@ extension AsyncDataTypedExt<T> on AsyncData<T> {
   T? get valueOrNull {
     final that = this;
     if (that is AsyncDataValue<T>) {
-      return that.value;
-    } else if (that is AsyncDataLoading<T> && that.hasValue) {
-      return that.value as T;
-    } else if (that is AsyncDataError<T> && that.hasValue) {
-      return that.value as T;
+      return that.data;
+    } else if (that is AsyncDataLoading<T> && that.hasData) {
+      return that.data as T;
+    } else if (that is AsyncDataError<T> && that.hasData) {
+      return that.data as T;
     } else {
       return null;
     }
@@ -184,7 +189,7 @@ extension AsyncDataTypedExt<T> on AsyncData<T> {
     if (isLoading) {
       return loading();
     } else if (isValue) {
-      return value(this.value);
+      return value(this.data);
     } else {
       return error(this.error, stackTrace);
     }
@@ -193,10 +198,10 @@ extension AsyncDataTypedExt<T> on AsyncData<T> {
   AsyncData<T> _toLoading() =>
       isLoading ? this as AsyncDataLoading<T> : AsyncData<T>.loading();
 
-  AsyncData<T> _toValue(T value) =>
-      (this is AsyncDataValue<T> && (this as AsyncDataValue<T>).value == value)
+  AsyncData<T> _toData(T data) =>
+      (this is AsyncDataValue<T> && (this as AsyncDataValue<T>).data == data)
           ? this
-          : AsyncData<T>.value(value);
+          : AsyncData<T>.data(data);
 
   AsyncData<T> _toError(Object error, [StackTrace? stackTrace]) =>
       (this is AsyncDataError<T> &&
@@ -205,51 +210,50 @@ extension AsyncDataTypedExt<T> on AsyncData<T> {
           ? this
           : AsyncData<T>.error(error, stackTrace);
 
-  AsyncData<T> _toValueLoading() {
+  AsyncData<T> _toDataLoading() {
     final that = this;
-    if (that is AsyncDataLoading<T> && that.hasValue) {
+    if (that is AsyncDataLoading<T> && that.hasData) {
       return this;
     }
-    if (hasValue) {
-      return AsyncData<T>.valueLoading(value);
+    if (hasData) {
+      return AsyncData<T>.dataLoading(data);
     }
     return AsyncData<T>.loading();
   }
 
-  AsyncData<T> _toValueLoadingRaw(T value) {
+  AsyncData<T> _toDataLoadingRaw(T data) {
     final that = this;
-    if (that is AsyncDataLoading<T> && that.hasValue && that.value == value) {
+    if (that is AsyncDataLoading<T> && that.hasData && that.data == data) {
       return this;
     }
-    return AsyncData<T>.valueLoading(value);
+    return AsyncData<T>.dataLoading(data);
   }
 
-  AsyncData<T> _toValueError(Object error, [StackTrace? stackTrace]) {
+  AsyncData<T> _toDataError(Object error, [StackTrace? stackTrace]) {
     final that = this;
     if (that is AsyncDataError<T> &&
-        that.hasValue &&
-        that.value == value &&
+        that.hasData &&
+        that.data == value &&
         that.error == error &&
         that.stackTrace == stackTrace) {
       return this;
     }
 
-    if (hasValue) {
-      return AsyncData<T>.valueError(value, error, stackTrace);
+    if (hasData) {
+      return AsyncData<T>.dataError(data, error, stackTrace);
     }
     return AsyncData<T>.error(error, stackTrace);
   }
 
-  AsyncData<T> _toValueErrorRaw(T value, Object error,
-      [StackTrace? stackTrace]) {
+  AsyncData<T> _toDataErrorRaw(T data, Object error, [StackTrace? stackTrace]) {
     final that = this;
     if (that is AsyncDataError<T> &&
-        that.hasValue &&
-        that.value == value &&
+        that.hasData &&
+        that.data == data &&
         that.error == error &&
         that.stackTrace == stackTrace) {
       return this;
     }
-    return AsyncData<T>.valueError(value, error, stackTrace);
+    return AsyncData<T>.dataError(data, error, stackTrace);
   }
 }

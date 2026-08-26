@@ -144,13 +144,13 @@ void main() {
       final notifier =
           ValueNotifier<AsyncData<TestObject>>(AsyncData.value(value));
 
-      notifier.toValueLoading();
+      notifier.toDataLoading();
       expect(notifier.isLoading, isTrue);
       expect(notifier.hasValue, isTrue);
       expect(notifier.value.value, equals(value));
 
       final value2 = TestObject();
-      notifier.toValueLoadingRaw(value2);
+      notifier.toDataLoadingRaw(value2);
       expect(notifier.isLoading, isTrue);
       expect(notifier.hasValue, isTrue);
       expect(notifier.value.value, equals(value2));
@@ -162,7 +162,7 @@ void main() {
           ValueNotifier<AsyncData<TestObject>>(AsyncData.value(value));
       final error = 'error';
 
-      notifier.toValueError(error);
+      notifier.toDataError(error);
       expect(notifier.isError, isTrue);
       expect(notifier.hasValue, isTrue);
       expect(notifier.value.value, equals(value));
@@ -170,7 +170,7 @@ void main() {
 
       final value2 = TestObject();
       final error2 = 'error2';
-      notifier.toValueErrorRaw(value2, error2);
+      notifier.toDataErrorRaw(value2, error2);
       expect(notifier.isError, isTrue);
       expect(notifier.hasValue, isTrue);
       expect(notifier.value.value, equals(value2));
@@ -243,7 +243,7 @@ void main() {
 
     test('toValueLoading', () {
       final notifier = ValueNotifier<AsyncData<int>>(AsyncData.value(1));
-      notifier.toValueLoading();
+      notifier.toDataLoading();
       expect(notifier.value.isLoading, isTrue);
       expect(notifier.value.hasValue, isTrue);
       expect(notifier.value.value, equals(1));
@@ -251,7 +251,7 @@ void main() {
 
     test('toValueError', () {
       final notifier = ValueNotifier<AsyncData<int>>(AsyncData.value(1));
-      notifier.toValueError('error');
+      notifier.toDataError('error');
       expect(notifier.value.isError, isTrue);
       expect(notifier.value.hasValue, isTrue);
       expect(notifier.value.value, equals(1));

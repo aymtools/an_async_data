@@ -9,6 +9,8 @@ extension AsyncDataNotifierTypedExt<T> on ValueNotifier<AsyncData<T>> {
 
   bool get isValue => value.isValue;
 
+  bool get isData => value.isData;
+
   bool get hasData => value.hasData;
 
   bool get hasValue => value.hasValue;
@@ -32,18 +34,20 @@ extension AsyncDataNotifierTypedExt<T> on ValueNotifier<AsyncData<T>> {
 
   void toLoading() => value = value._toLoading();
 
-  void toValue(T data) => value = value._toValue(data);
+  void toValue(T data) => toData(data);
+
+  void toData(T data) => value = value._toData(data);
 
   void toError(Object error, [StackTrace? stackTrace]) =>
       value = value._toError(error, stackTrace);
 
-  void toValueLoading() => value = value._toValueLoading();
+  void toDataLoading() => value = value._toDataLoading();
 
-  void toValueLoadingRaw(T data) => value = value._toValueLoadingRaw(data);
+  void toDataLoadingRaw(T data) => value = value._toDataLoadingRaw(data);
 
-  void toValueError(Object error, [StackTrace? stackTrace]) =>
-      value = value._toValueError(error, stackTrace);
+  void toDataError(Object error, [StackTrace? stackTrace]) =>
+      value = value._toDataError(error, stackTrace);
 
-  void toValueErrorRaw(T data, Object error, [StackTrace? stackTrace]) =>
-      value = value._toValueErrorRaw(data, error, stackTrace);
+  void toDataErrorRaw(T data, Object error, [StackTrace? stackTrace]) =>
+      value = value._toDataErrorRaw(data, error, stackTrace);
 }
