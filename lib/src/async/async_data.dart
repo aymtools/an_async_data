@@ -189,7 +189,7 @@ extension AsyncDataTypedExt<T> on AsyncData<T> {
     if (isLoading) {
       return loading();
     } else if (isValue) {
-      return value(this.data);
+      return value(data);
     } else {
       return error(this.error, stackTrace);
     }
