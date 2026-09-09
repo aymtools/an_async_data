@@ -1,3 +1,11 @@
+## 1.3.0
+
+* Deprecate value-related APIs and uniformly use data instead.
+
+### Breaking Changes
+
+* value is now an alias for data.
+
 ## 1.2.0
 
 * `AsyncDataLoading<T>` and  `syncDataError<T>` Attached value.

@@ -25,7 +25,7 @@ void main() {
     });
 
     testWidgets('Builder2 shows value state', (WidgetTester tester) async {
-      final notifier = ValueNotifier<AsyncData<int>>(AsyncData.value(42));
+      final notifier = ValueNotifier<AsyncData<int>>(AsyncData.data(42));
 
       await tester.pumpWidget(
         MaterialApp(
@@ -130,7 +130,7 @@ void main() {
     testWidgets('BuilderList2 shows list items when value is available',
         (WidgetTester tester) async {
       final notifier =
-          ValueNotifier<AsyncData<List<int>>>(AsyncData.value([10, 20]));
+          ValueNotifier<AsyncData<List<int>>>(AsyncData.data([10, 20]));
 
       await tester.pumpWidget(
         MaterialApp(
