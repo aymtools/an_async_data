@@ -7,18 +7,21 @@ extension AsyncDataNotifierTypedExt<T> on ValueNotifier<AsyncData<T>> {
 
   bool get isError => value.isError;
 
+  @Deprecated('use isData, v1.3.0')
   bool get isValue => value.isValue;
 
   bool get isData => value.isData;
 
   bool get hasData => value.hasData;
 
+  @Deprecated('use hasData, v1.3.0')
   bool get hasValue => value.hasValue;
 
   T get data => value.data;
 
-  T? get dataOrNull => valueOrNull;
+  T? get dataOrNull => value.dataOrNull;
 
+  @Deprecated('use dataOrNull, v1.3.0')
   T? get valueOrNull => value.valueOrNull;
 
   Object get error => value.error;
@@ -34,6 +37,7 @@ extension AsyncDataNotifierTypedExt<T> on ValueNotifier<AsyncData<T>> {
 
   void toLoading() => value = value._toLoading();
 
+  @Deprecated('use toData(), v1.3.0')
   void toValue(T data) => toData(data);
 
   void toData(T data) => value = value._toData(data);

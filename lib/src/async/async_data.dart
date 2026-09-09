@@ -6,10 +6,13 @@ part 'async_data_value_notifier_ext.dart';
 sealed class AsyncData<T> {
   bool get hasData;
 
+  T get data;
+
   AsyncData._();
 
   factory AsyncData.loading() => AsyncDataLoading<T>._();
 
+  @Deprecated('use AsyncData.data , v1.3.0')
   factory AsyncData.value(T data) => AsyncDataValue<T>._(data);
 
   factory AsyncData.data(T data) => AsyncDataValue<T>._(data);
@@ -29,19 +32,19 @@ sealed class AsyncData<T> {
 class AsyncDataLoading<T> extends AsyncData<T> {
   @override
   final bool hasData;
-  final T? data;
+  final T? _data;
 
   AsyncDataLoading._()
       : hasData = false,
-        data = null,
+        _data = null,
         super._();
 
-  AsyncDataLoading._data(T this.data)
+  AsyncDataLoading._data(T this._data)
       : hasData = true,
         super._();
 
   @override
-  int get hashCode => Object.hash(AsyncDataLoading, T, hasData, data);
+  int get hashCode => Object.hash(AsyncDataLoading, T, hasData, _data);
 
   @override
   bool operator ==(Object other) =>
@@ -49,29 +52,39 @@ class AsyncDataLoading<T> extends AsyncData<T> {
       (other.runtimeType == runtimeType &&
           other is AsyncDataLoading<T> &&
           other.hasData == hasData &&
-          other.data == data);
+          other._data == _data);
+
+  @override
+  T get data {
+    if (hasData) return _data as T;
+    throw StateError('AsyncDataLoading<$T> not has data');
+  }
 }
 
 ///  加载完成 包含数据
 class AsyncDataValue<T> extends AsyncData<T> {
-  final T data;
+  final T _data;
 
-  T get value => data;
+  @Deprecated('use date, v1.3.0')
+  T get value => _data;
 
   @override
   bool get hasData => true;
 
-  AsyncDataValue._(this.data) : super._();
+  @override
+  T get data => _data;
+
+  AsyncDataValue._(this._data) : super._();
 
   @override
-  int get hashCode => Object.hash(AsyncDataValue, T, data);
+  int get hashCode => Object.hash(AsyncDataValue, T, _data);
 
   @override
   bool operator ==(Object other) =>
       identical(other, this) ||
       (other.runtimeType == runtimeType &&
           other is AsyncDataValue<T> &&
-          other.data == data);
+          other._data == _data);
 }
 
 /// 加载失败 存在异常
@@ -80,20 +93,26 @@ class AsyncDataError<T> extends AsyncData<T> {
   final StackTrace? stackTrace;
   @override
   final bool hasData;
-  final T? data;
+  final T? _data;
+
+  @override
+  T get data {
+    if (hasData) return _data as T;
+    throw StateError('AsyncDataError<$T> not has data');
+  }
 
   AsyncDataError._(this.error, [this.stackTrace])
       : hasData = false,
-        data = null,
+        _data = null,
         super._();
 
-  AsyncDataError._data(T this.data, this.error, [this.stackTrace])
+  AsyncDataError._data(T this._data, this.error, [this.stackTrace])
       : hasData = true,
         super._();
 
   @override
   int get hashCode =>
-      Object.hash(AsyncDataError, T, hasData, data, error, stackTrace);
+      Object.hash(AsyncDataError, T, hasData, _data, error, stackTrace);
 
   @override
   bool operator ==(Object other) =>
@@ -101,7 +120,7 @@ class AsyncDataError<T> extends AsyncData<T> {
       (other.runtimeType == runtimeType &&
           other is AsyncDataError<T> &&
           other.hasData == hasData &&
-          other.data == data &&
+          other._data == _data &&
           other.error == error &&
           other.stackTrace == stackTrace);
 }
@@ -113,54 +132,23 @@ extension AsyncDataTypedExt<T> on AsyncData<T> {
 
   bool get isError => this is AsyncDataError<T>;
 
+  @Deprecated('use isDate, v1.3.0')
   bool get isValue => this is AsyncDataValue<T>;
 
   bool get isData => this is AsyncDataValue<T>;
 
+  @Deprecated('use hasData, v1.3.0')
   bool get hasValue => hasData;
 
-  T get value {
-    final that = this;
-    if (that is AsyncDataValue<T>) {
-      return that.data;
-    } else if (that is AsyncDataLoading<T> && that.hasData) {
-      return that.data as T;
-    } else if (that is AsyncDataError<T> && that.hasData) {
-      return that.data as T;
-    } else {
-      throw StateError('AsyncData not has value');
-    }
-  }
+  @Deprecated('use data, v1.3.0')
+  T get value => data;
 
-  T get data {
-    final that = this;
-    if (that is AsyncDataValue<T>) {
-      return that.value;
-    } else {
-      throw StateError('AsyncData is not AsyncDataValue<$T>');
-    }
-  }
-
-  T? get valueOrNull {
-    final that = this;
-    if (that is AsyncDataValue<T>) {
-      return that.data;
-    } else if (that is AsyncDataLoading<T> && that.hasData) {
-      return that.data as T;
-    } else if (that is AsyncDataError<T> && that.hasData) {
-      return that.data as T;
-    } else {
-      return null;
-    }
-  }
+  @Deprecated('use dataOrNull, v1.3.0')
+  T? get valueOrNull => dataOrNull;
 
   T? get dataOrNull {
-    final that = this;
-    if (that is AsyncDataValue<T>) {
-      return that.value;
-    } else {
-      return null;
-    }
+    if (hasData) return data;
+    return null;
   }
 
   Object get error {
@@ -188,7 +176,7 @@ extension AsyncDataTypedExt<T> on AsyncData<T> {
   }) {
     if (isLoading) {
       return loading();
-    } else if (isValue) {
+    } else if (isData) {
       return value(data);
     } else {
       return error(this.error, stackTrace);
@@ -233,7 +221,7 @@ extension AsyncDataTypedExt<T> on AsyncData<T> {
     final that = this;
     if (that is AsyncDataError<T> &&
         that.hasData &&
-        that.data == value &&
+        that.data == data &&
         that.error == error &&
         that.stackTrace == stackTrace) {
       return this;
